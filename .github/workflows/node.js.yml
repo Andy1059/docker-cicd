@@ -15,32 +15,29 @@ jobs:
         node-version: [11.10.1]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          
-      - run: |
-          cd docker-cicd/basics
-          npm install
-          
+          cache-dependency-path: docker-cicd/basics/package-lock.json
+      - name: Install npm
+        working-directory: docker-cicd/basics
+        run: npm install
       - name: Install Dependencies
-        run: |
-          cd docker-cicd/basics
-          npm ci
+        working-directory: docker-cicd/basics
+        run: npm ci
 
       - name: Build Application
-        run: |
-          cd docker-cicd/basics
-          npm run build --if-present
+        working-directory: docker-cicd/basics
+        run: npm run build --if-present
 
       - name: Run Tests
-        run: |
-          cd docker-cicd/basics
-          npm test
+        working-directory: docker-cicd/basics
+        run: npm test
 
   docker-build-push:
     runs-on: ubuntu-latest
